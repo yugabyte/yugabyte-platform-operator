@@ -15,6 +15,9 @@ spec:
     pullSecret: yugabyte-k8s-pull-secret
     repository: quay.io/yugabyte/yugaware
     tag: 2.1.8.2-b1
+  subresources:
+    status:
+      lastUpdated: 2020-07-21-1541
   securityContext:
     enabled: false
     fsGroup: 1001
