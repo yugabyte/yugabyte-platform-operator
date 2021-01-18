@@ -1,5 +1,0 @@
-channels:
-- currentCSV: yugabyte-platform-operator.v1.0.0
-  name: stable
-defaultChannel: stable
-packageName: yugabyte-platform-operator
