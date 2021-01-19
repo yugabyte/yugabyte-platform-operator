@@ -29,17 +29,17 @@ spec:
       tag: v2.2.1
     pullPolicy: IfNotPresent
     pullSecret: yugabyte-k8s-pull-secret
-    repository: quay.io/yugabyte/yugaware
-    tag: 2.5.1.0-b153
+    repository: registry.connect.redhat.com/yugabytedb/yugabyte-platform
+    tag: latest
     thirdparty-deps:
       name: yugabyte/thirdparty-deps
       registry: quay.io
       tag: latest
   ip_version_support: v4_only
   ocpCompatibility:
-    enabled: false
+    enabled: true
   rbac:
-    create: true
+    create: false
   securityContext:
     enabled: false
     fsGroup: 1001
@@ -63,5 +63,5 @@ spec:
     serviceAccount: yugaware
     storage: 100Gi
     storageClass: standard
-  
-  
+
+
