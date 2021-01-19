@@ -28,11 +28,4 @@ spec:
         - "--enable-leader-election"
         - "--leader-election-id=yugabyte-platform-operator"
         name: manager
-        resources:
-          limits:
-            cpu: 100m
-            memory: 90Mi
-          requests:
-            cpu: 100m
-            memory: 60Mi
       terminationGracePeriodSeconds: 10
