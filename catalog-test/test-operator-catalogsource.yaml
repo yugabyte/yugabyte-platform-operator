@@ -1,0 +1,13 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: yugabyte-platform-catlog
+  namespace: openshift-marketplace
+spec:
+  sourceType: grpc
+  image: REGISTRY/yugabyte-platform-index:TAG
+  displayName: Yugabyte Operators
+  publisher: Yugabyte Inc
+  updateStrategy:
+    registryPoll:
+      interval: 5m

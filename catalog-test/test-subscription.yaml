@@ -1,0 +1,10 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: yugabyte-platform-subscription
+spec:
+  channel: alpha
+  installPlanApproval: Automatic
+  name: yugabyte-platform-operator-bundle
+  source: yugabyte-platform-catlog
+  sourceNamespace: openshift-marketplace
