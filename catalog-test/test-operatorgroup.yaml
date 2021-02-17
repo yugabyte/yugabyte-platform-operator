@@ -1,0 +1,9 @@
+apiVersion: operators.coreos.com/v1alpha2
+kind: OperatorGroup
+metadata:
+  name: yugabyte-platform-group
+  namespace: test-operator
+spec:
+# Provide multiple namespaces to install operator in mulitple namespaces
+  targetNamespaces:
+    - test-operator

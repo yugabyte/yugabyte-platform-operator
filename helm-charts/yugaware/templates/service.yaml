@@ -27,8 +27,10 @@ spec:
   - name: ui
 {{- if .Values.tls.enabled }}
     port: 443
+    targetPort: 8443
 {{- else }}
     port: 80
+    targetPort: 8080
 {{- end }}
   - name: metrics
     port: 9090
@@ -100,7 +102,7 @@ spec:
             secretName: {{ .Release.Name }}-yugaware-tls-cert
         {{- end }}
       containers:
-        - image: postgres:11.5
+        - image: {{ include "full_image" (dict "containerName" "postgres" "root" .) }}
           name: postgres
           env:
             - name: POSTGRES_USER
@@ -128,9 +130,11 @@ spec:
               mountPath: /var/lib/postgresql/data
               subPath: postgres_data
         - name: prometheus
-          image: prom/prometheus:v2.2.1
+          image: {{ include "full_image" (dict "containerName" "prometheus" "root" .) }}
+          {{- if (not .Values.ocpCompatibility.enabled) }}
           securityContext:
             runAsUser: 0
+          {{- end }}
           volumeMounts:
           - name: prometheus-config
             mountPath: /etc/prometheus/
@@ -145,7 +149,7 @@ spec:
           ports:
             - containerPort: 9090
         - name: thirdparty-deps
-          image: quay.io/yugabyte/thirdparty-deps:latest
+          image: {{ include "full_image" (dict "containerName" "thirdparty-deps" "root" .) }}
           command: [ "/bin/sh", "-c", "--" ]
           args:  [ "while true; do sleep 30; done;" ]
           volumeMounts:
@@ -160,7 +164,7 @@ spec:
                   - '/opt/third-party'
                   - '/third-party-deps'
         - name: yugaware
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ include "full_yugaware_image" . }}
           {{- if .Values.securityContext.enabled }}
           securityContext:
             runAsUser: {{ .Values.securityContext.runAsUser }}
@@ -212,9 +216,9 @@ spec:
             mountPath: /opt/swamper_targets/
             subPath: swamper_targets
         - name: nginx
-          image: nginx:1.17.4
+          image: {{ include "full_image" (dict "containerName" "nginx" "root" .) }}
           ports:
-          - containerPort: 80
+          - containerPort: 8080
           volumeMounts:
           - mountPath: /etc/nginx/conf.d/
             name: nginx-config
@@ -223,12 +227,3 @@ spec:
             mountPath: /opt/certs/
             readOnly: true
           {{- end }}
-        - name: dnsmasq
-          image: "janeczku/go-dnsmasq:release-1.0.7"
-          args:
-            - --listen
-            - "127.0.0.1:53"
-            - --default-resolver
-            - --append-search-domains
-            - --hostsfile=/etc/hosts
-            - --verbose
