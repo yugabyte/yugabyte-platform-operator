@@ -242,11 +242,13 @@ spec:
           replicas: 1
           selector:
             matchLabels:
+              app: yugabyte-platform-operator
               control-plane: controller-manager
           strategy: {}
           template:
             metadata:
               labels:
+                app: yugabyte-platform-operator
                 control-plane: controller-manager
             spec:
               containers:
