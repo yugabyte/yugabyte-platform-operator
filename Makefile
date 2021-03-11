@@ -1,7 +1,10 @@
 # Current Operator version
-VERSION ?= 0.0.3
+VERSION ?= 0.0.4
+# Bundle channels
+CHANNELS ?= alpha
+DEFAULT_CHANNEL ?= alpha
 # Default bundle image tag
-BUNDLE_IMG ?= controller-bundle:$(VERSION)
+BUNDLE_IMG ?= registry.connect.redhat.com/yugabytedb/yugabyte-platform-operator-bundle:$(VERSION)
 # Options for 'bundle-build'
 ifneq ($(origin CHANNELS), undefined)
 BUNDLE_CHANNELS := --channels=$(CHANNELS)
@@ -12,7 +15,7 @@ endif
 BUNDLE_METADATA_OPTS ?= $(BUNDLE_CHANNELS) $(BUNDLE_DEFAULT_CHANNEL)
 
 # Image URL to use all building/pushing image targets
-IMG ?= controller:latest
+IMG ?= registry.connect.redhat.com/yugabytedb/yugabyte-platform-operator:$(VERSION)
 
 all: docker-build
 
@@ -69,8 +72,8 @@ ifeq (, $(shell which helm-operator 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p bin ;\
-	curl -LO https://github.com/operator-framework/operator-sdk/releases/download/v1.0.0/helm-operator-v1.0.0-$(ARCHOPER)-$(OSOPER) ;\
-	mv helm-operator-v1.0.0-$(ARCHOPER)-$(OSOPER) ./bin/helm-operator ;\
+	curl -LO https://github.com/operator-framework/operator-sdk/releases/download/v1.0.1/helm-operator-v1.0.1-$(ARCHOPER)-$(OSOPER) ;\
+	mv helm-operator-v1.0.1-$(ARCHOPER)-$(OSOPER) ./bin/helm-operator ;\
 	chmod +x ./bin/helm-operator ;\
 	}
 HELM_OPERATOR=$(realpath ./bin/helm-operator)

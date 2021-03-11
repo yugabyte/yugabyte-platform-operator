@@ -35,7 +35,7 @@ spec:
   ocpCompatibility:
     enabled: true
   rbac:
-    create: false
+    create: true
   securityContext:
     enabled: false
     fsGroup: 1001

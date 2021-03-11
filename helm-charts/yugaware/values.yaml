@@ -83,4 +83,5 @@ rbac:
 ## In order to deploy on OpenShift Container Platform, set this to
 ## true.
 ocpCompatibility:
-  enabled: false
+  # manually modified line
+  enabled: true
