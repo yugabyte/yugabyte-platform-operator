@@ -5,4 +5,4 @@ kind: Kustomization
 images:
 - name: controller
   newName: registry.connect.redhat.com/yugabytedb/yugabyte-platform-operator
-  newTag: 0.0.3
+  newTag: 0.0.4

@@ -15,11 +15,13 @@ metadata:
 spec:
   selector:
     matchLabels:
+      app: yugabyte-platform-operator
       control-plane: controller-manager
   replicas: 1
   template:
     metadata:
       labels:
+        app: yugabyte-platform-operator
         control-plane: controller-manager
     spec:
       containers:

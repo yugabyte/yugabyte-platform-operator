@@ -72,5 +72,17 @@ rules:
   resources:
   - ybplatforms/finalizers
 
+# We need to allow reading metrics using cluster-monitoring-view
+# ClusterRole
+- verbs:
+  - "create"
+  - "get"
+  - "delete"
+  - "patch"
+  - "list"
+  apiGroups:
+  - "rbac.authorization.k8s.io"
+  resources:
+  - "clusterrolebindings"
 
 # +kubebuilder:scaffold:rules

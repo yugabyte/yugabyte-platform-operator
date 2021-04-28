@@ -34,10 +34,12 @@ data:
     play.evolutions.enabled=false
     play.modules.enabled += "org.flywaydb.play.PlayModule"
     play.logger.includeConfigProperties=true
-    log.override.path = "/opt/yugaware_data/logs"
+    log.override.path = "/opt/yugabyte/yugaware/data/logs"
 
     db {
-      default.url="jdbc:postgresql://{{ eq .Values.ip_version_support "v6_only" | ternary "[::1]" "127.0.0.1" }}:5432/"${POSTGRES_DB}
+      default.host="{{ eq .Values.ip_version_support "v6_only" | ternary "[::1]" "127.0.0.1" }}"
+      default.port=5432
+      default.url="jdbc:postgresql://"${db.default.host}":"${db.default.port}"/"${POSTGRES_DB}
       default.driver=org.postgresql.Driver
       default.username=${POSTGRES_USER}
       default.password=${POSTGRES_PASSWORD}
@@ -53,16 +55,17 @@ data:
 
     yb {
       devops.home = /opt/yugabyte/devops
-      metrics.url = "http://{{ eq .Values.ip_version_support "v6_only" | ternary "[::1]" "127.0.0.1" }}:9090/api/v1"
-      storage.path = /opt/yugaware_data
+      metrics.host = "{{ eq .Values.ip_version_support "v6_only" | ternary "[::1]" "127.0.0.1" }}"
+      metrics.url = "http://"${yb.metrics.host}":9090/api/v1"
+      storage.path = /opt/yugabyte/yugaware/data
       docker.network = bridge
       seedData = false
-      swamper.targetPath = /opt/swamper_targets
+      swamper.targetPath = /opt/yugabyte/prometheus/targets
       multiTenant = {{ .Values.yugaware.multiTenant }}
-      releases.path = "/opt/releases"
+      releases.path = "/opt/yugabyte/releases"
       docker.release = "/opt/yugabyte/release"
       # TODO(bogdan): need this extra level for installing from local...
-      thirdparty.packagePath = /opt/third-party/third-party
+      thirdparty.packagePath = /opt/third-party
       helm.package = "{{ .Values.helm.package }}"
       helm.timeout_secs = {{ .Values.helm.timeout }}
       health.check_interval_ms = 300000
@@ -172,6 +175,50 @@ data:
         scrape_interval:     10s
         evaluation_interval: 10s
     scrape_configs:
+      {{- if .Values.ocpCompatibility.enabled }}
+      - job_name: "ocp-prometheus-federated"
+        scheme: https
+
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          insecure_skip_verify: true
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+
+        honor_labels: true
+        metrics_path: "/federate"
+
+        params:
+          'match[]':
+            # kubelet metrics
+            - 'kubelet_volume_stats_used_bytes{persistentvolumeclaim=~"(.*)-yb-(.*)"}'
+            - 'kubelet_volume_stats_capacity_bytes{persistentvolumeclaim=~"(.*)-yb-(.*)"}'
+            # kubelet cadvisor metrics
+            - 'container_cpu_usage_seconds_total{pod=~"(.*)yb-(.*)"}'
+            - 'container_memory_working_set_bytes{pod=~"(.*)yb-(.*)"}'
+            # kube-state-metrics
+            - 'kube_pod_container_resource_requests_cpu_cores{pod=~"(.*)yb-(.*)"}'
+
+        static_configs:
+          - targets:
+            - "prometheus-k8s.openshift-monitoring.svc:9091"
+
+        metric_relabel_configs:
+          # Save the name of the metric so we can group_by since we cannot by __name__ directly...
+          - source_labels: ["__name__"]
+            regex: "(.*)"
+            target_label: "saved_name"
+            replacement: "$1"
+          - source_labels: ["pod"]
+            regex: "(.*)"
+            target_label: "pod_name"
+            replacement: "$1"
+          - source_labels: ["container"]
+            regex: "(.*)"
+            target_label: "container_name"
+            replacement: "$1"
+
+      {{- else }}
+
       - job_name: 'kubernetes-nodes'
 
         scheme: https
@@ -198,58 +245,32 @@ data:
             regex: "(.*)"
             target_label: "saved_name"
             replacement: "$1"
-
-
-      - job_name: 'kubernetes-pods'
-
-        kubernetes_sd_configs:
-        - role: pod
-
-        relabel_configs:
-        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
-          action: keep
-          regex: true
-        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
-          action: replace
-          target_label: __metrics_path__
-          regex: (.+)
-        - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
-          action: replace
-          regex: ([^:]+)(?::\d+)?;(\d+)
-          replacement: $1:$2
-          target_label: __address__
-        - action: labelmap
-          regex: __meta_kubernetes_pod_label_(.+)
-        - source_labels: [__meta_kubernetes_namespace]
-          action: replace
-          target_label: kubernetes_namespace
-        - source_labels: [__meta_kubernetes_pod_name]
-          action: replace
-          target_label: kubernetes_pod_name
-        metric_relabel_configs:
-          # Save the name of the metric so we can group_by since we cannot by __name__ directly...
-          - source_labels: ["__name__"]
+          - source_labels: ["pod"]
             regex: "(.*)"
-            target_label: "saved_name"
+            target_label: "pod_name"
+            replacement: "$1"
+          - source_labels: ["container"]
+            regex: "(.*)"
+            target_label: "container_name"
             replacement: "$1"
 
       - job_name: 'kube-state-metrics'
         static_configs:
         - targets: ['kube-state-metrics.kube-system.svc.{{.Values.domainName}}:8080']
         metric_relabel_configs:
-        # Save the name of the metric so we can group_by since we cannot by __name__ directly...
-        - source_labels: ["__name__"]
-          regex: "(.*)"
-          target_label: "saved_name"
-          replacement: "$1"
-        - source_labels: [pod]
-          regex: "(.*)"
-          target_label: "pod_name"
-          replacement: "$1"
-        - source_labels: [pod]
-          regex: "(yb-[^-]*)-(.*)"
-          target_label: "container_name"
-          replacement: "$1"
+          # Save the name of the metric so we can group_by since we cannot by __name__ directly...
+          - source_labels: ["__name__"]
+            regex: "(.*)"
+            target_label: "saved_name"
+            replacement: "$1"
+          - source_labels: ["pod"]
+            regex: "(.*)"
+            target_label: "pod_name"
+            replacement: "$1"
+          - source_labels: ["container"]
+            regex: "(.*)"
+            target_label: "container_name"
+            replacement: "$1"
 
       - job_name: 'kubernetes-cadvisor'
 
@@ -277,11 +298,21 @@ data:
             regex: "(.*)"
             target_label: "saved_name"
             replacement: "$1"
+          - source_labels: ["pod"]
+            regex: "(.*)"
+            target_label: "pod_name"
+            replacement: "$1"
+          - source_labels: ["container"]
+            regex: "(.*)"
+            target_label: "container_name"
+            replacement: "$1"
+
+      {{- end }}
 
       - job_name: "node"
         file_sd_configs:
           - files:
-            - '/opt/swamper_targets/node.*.json'
+            - '/opt/yugabyte/prometheus/targets/node.*.json'
         metric_relabel_configs:
           # Save the name of the metric so we can group_by since we cannot by __name__ directly...
           - source_labels: ["__name__"]
@@ -293,7 +324,7 @@ data:
         metrics_path: "/prometheus-metrics"
         file_sd_configs:
           - files:
-            - '/opt/swamper_targets/yugabyte.*.json'
+            - '/opt/yugabyte/prometheus/targets/yugabyte.*.json'
         metric_relabel_configs:
           # Save the name of the metric so we can group_by since we cannot by __name__ directly...
           - source_labels: ["__name__"]

@@ -44,4 +44,5 @@ status:
     kind: ""
     plural: ""
   conditions: null
+  # manually modified line
   storedVersions: []

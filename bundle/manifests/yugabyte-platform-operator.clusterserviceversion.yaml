@@ -49,7 +49,7 @@ metadata:
               "enabled": true
             },
             "rbac": {
-              "create": false
+              "create": true
             },
             "securityContext": {
               "enabled": false,
@@ -86,13 +86,13 @@ metadata:
     capabilities: Seamless Upgrades
     categories: Database
     certified: "true"
-    containerImage: registry.connect.redhat.com/yugabytedb/yugabyte-platform-operator:0.0.3
-    description: Operator for Yugabyte Platform makes it easy to deploy and upgrade Yugabyte platform on OpenShift environments.
-    operators.operatorframework.io/builder: operator-sdk-v1.0.0
+    containerImage: registry.connect.redhat.com/yugabytedb/yugabyte-platform-operator:0.0.4
+    description: Operator for Yugabyte Platform makes it easy to deploy and upgrade Yugabyte Platform on OpenShift environments.
+    operators.operatorframework.io/builder: operator-sdk-v1.0.1
     operators.operatorframework.io/project_layout: helm.sdk.operatorframework.io/v1
     repository: https://github.com/yugabyte/yugabyte-platform-operator
     support: YugabyteDB
-  name: yugabyte-platform-operator.v0.0.3
+  name: yugabyte-platform-operator.v0.0.4
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -101,6 +101,7 @@ spec:
     - kind: YBPlatform
       name: ybplatforms.yugabyte.com
       version: v1alpha1
+      # manually added block start
       description: Deploy and manage Yugabyte Platform as a Kubernetes native custom resource.
       displayName: Yugabyte Platform
       resources:
@@ -125,9 +126,10 @@ spec:
       - kind: ConfigMap
         name: ""
         version: v1
+      # manually added block end
   description: |2
 
-    Operator for Yugabyte Platform makes it easy to deploy and upgrade Yugabyte platform on OpenShift environments.
+    Operator for Yugabyte Platform makes it easy to deploy and upgrade Yugabyte Platform on OpenShift environments.
     Use Yugabyte Platform's orchestration and monitoring to manage YugabyteDB universes. Yugabyte Platform can create a YugabyteDB universe with many instances (VMs, pods, machines, etc., provided by IaaS), logically grouped together to form one logical distributed database. Each universe includes one or more clusters. A universe is comprised of one primary cluster and, optionally, one or more read replica clusters. All instances belonging to a cluster run on the same type of cloud provider instance type.
 
     ### Yugabyte Platform Features
@@ -138,10 +140,10 @@ spec:
     ### Getting Started
     Here are a few resources for getting started with Yugabyte platform
     * [Quick start guide for Yugabyte Platform](https://docs.yugabyte.com/latest/yugabyte-platform/deploy/) - Install Yugabyte platform on OpenShift.
-    * [Quick Start for YugabyteDB](http://docs.yugabyte.com/latest/quick-start/) - install, create a local cluster and read/write from YugaByte DB.
+    * [Quick Start for YugabyteDB](http://docs.yugabyte.com/latest/quick-start/) - install, create a local cluster and read/write from YugabyteDB.
     * [Explore core features](https://docs.yugabyte.com/latest/explore/) - automatic sharding & re-balancing, linear scalability, fault tolerance, tunable reads etc.
     * [Ecosystem integrations](https://docs.yugabyte.com/latest/develop/ecosystem-integrations/) - integrations with Apache Kafka/KSQL, Apache Spark, JanusGraph, KairosDB, Presto and more.
-    * [Real world apps](https://docs.yugabyte.com/latest/develop/realworld-apps/) - sample real-world, end-to-end applications built using YugaByte DB.
+    * [Real world apps](https://docs.yugabyte.com/latest/develop/realworld-apps/) - sample real-world, end-to-end applications built using YugabyteDB.
 
     ### Help
     Cannot find what you are looking for? Have a question? We love to hear from you - [please file a GitHub issue](https://github.com/YugaByte/yugabyte-db/issues) or talk to us live at [Slack](https://www.yugabyte.com/slack).
@@ -212,6 +214,16 @@ spec:
           verbs:
           - update
         - apiGroups:
+          - rbac.authorization.k8s.io
+          resources:
+          - clusterrolebindings
+          verbs:
+          - create
+          - get
+          - delete
+          - patch
+          - list
+        - apiGroups:
           - authentication.k8s.io
           resources:
           - tokenreviews
@@ -230,11 +242,13 @@ spec:
           replicas: 1
           selector:
             matchLabels:
+              app: yugabyte-platform-operator
               control-plane: controller-manager
           strategy: {}
           template:
             metadata:
               labels:
+                app: yugabyte-platform-operator
                 control-plane: controller-manager
             spec:
               containers:
@@ -253,7 +267,7 @@ spec:
                 - --metrics-addr=127.0.0.1:8080
                 - --enable-leader-election
                 - --leader-election-id=yugabyte-platform-operator
-                image: registry.connect.redhat.com/yugabytedb/yugabyte-platform-operator:0.0.3
+                image: registry.connect.redhat.com/yugabytedb/yugabyte-platform-operator:0.0.4
                 name: manager
                 resources: {}
               terminationGracePeriodSeconds: 10
@@ -301,4 +315,6 @@ spec:
   maturity: alpha
   provider:
     name: Yugabyte Inc
-  version: 0.0.3
+  version: 0.0.4
+  # manually added line
+  replaces: yugabyte-platform-operator.v0.0.3
