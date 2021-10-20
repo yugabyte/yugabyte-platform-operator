@@ -1,5 +1,5 @@
 # Current Operator version
-VERSION ?= 0.0.4
+VERSION ?= 0.0.6
 # Bundle channels
 CHANNELS ?= alpha
 DEFAULT_CHANNEL ?= alpha

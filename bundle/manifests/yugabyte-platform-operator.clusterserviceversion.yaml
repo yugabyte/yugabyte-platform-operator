@@ -86,13 +86,13 @@ metadata:
     capabilities: Seamless Upgrades
     categories: Database
     certified: "true"
-    containerImage: registry.connect.redhat.com/yugabytedb/yugabyte-platform-operator:0.0.4
+    containerImage: registry.connect.redhat.com/yugabytedb/yugabyte-platform-operator:0.0.6
     description: Operator for Yugabyte Platform makes it easy to deploy and upgrade Yugabyte Platform on OpenShift environments.
     operators.operatorframework.io/builder: operator-sdk-v1.0.1
     operators.operatorframework.io/project_layout: helm.sdk.operatorframework.io/v1
     repository: https://github.com/yugabyte/yugabyte-platform-operator
     support: YugabyteDB
-  name: yugabyte-platform-operator.v0.0.4
+  name: yugabyte-platform-operator.v0.0.6
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -267,7 +267,7 @@ spec:
                 - --metrics-addr=127.0.0.1:8080
                 - --enable-leader-election
                 - --leader-election-id=yugabyte-platform-operator
-                image: registry.connect.redhat.com/yugabytedb/yugabyte-platform-operator:0.0.4
+                image: registry.connect.redhat.com/yugabytedb/yugabyte-platform-operator:0.0.6
                 name: manager
                 resources: {}
               terminationGracePeriodSeconds: 10
@@ -315,6 +315,6 @@ spec:
   maturity: alpha
   provider:
     name: Yugabyte Inc
-  version: 0.0.4
+  version: 0.0.6
   # manually added line
-  replaces: yugabyte-platform-operator.v0.0.3
+  replaces: yugabyte-platform-operator.v0.0.5
