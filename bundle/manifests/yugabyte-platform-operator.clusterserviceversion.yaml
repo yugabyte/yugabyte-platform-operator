@@ -317,4 +317,6 @@ spec:
     name: Yugabyte Inc
   version: 0.0.6
   # manually added line
-  replaces: yugabyte-platform-operator.v0.0.5
+  # https://v0-18-z.olm.operatorframework.io/docs/concepts/olm-architecture/operator-catalog/creating-an-update-graph/
+  skips:
+  - yugabyte-platform-operator.v0.0.5
