@@ -5,7 +5,7 @@ LABEL name="Yugabyte Platform Operator" \
       maintainer="oss-maintainers@yugabyte.com" \
       vendor="Yugabyte Inc" \
       release="1" \
-      version="0.0.4" \
+      version="0.0.6" \
       summary="Container image for Yugabyte Platform operator" \
       description="Operator for Yugabyte Platform makes it easy to deploy and upgrade Yugabyte platform on kubernetes environment"
 
