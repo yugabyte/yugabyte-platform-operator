@@ -1,8 +1,8 @@
 # Current Operator version
-VERSION ?= 0.0.6
+VERSION ?= 2.14.1
 # Bundle channels
-CHANNELS ?= alpha
-DEFAULT_CHANNEL ?= alpha
+CHANNELS ?= stable
+DEFAULT_CHANNEL ?= stable
 # Default bundle image tag
 BUNDLE_IMG ?= registry.connect.redhat.com/yugabytedb/yugabyte-platform-operator-bundle:$(VERSION)
 # Options for 'bundle-build'

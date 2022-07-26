@@ -2,7 +2,9 @@ domain: com
 layout: helm.sdk.operatorframework.io/v1
 projectName: yugabyte-platform-operator
 resources:
-- group: yugabyte
+-
+  domain: com
+  group: yugabyte
   kind: YBPlatform
   version: v1alpha1
-version: 3-alpha
+version: "3"

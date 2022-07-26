@@ -7,12 +7,13 @@ metadata:
     categories: Database
     certified: "true"
     containerImage: registry.connect.redhat.com/yugabytedb/yugabyte-platform-operator:0.0.4
-    description: Operator for Yugabyte Platform makes it easy to deploy and upgrade Yugabyte Platform on OpenShift environments.
+    description: Operator for Yugabyte Platform makes it easy to deploy and upgrade
+      Yugabyte Platform on OpenShift environments.
     operators.operatorframework.io/builder: operator-sdk-v1.0.1
     operators.operatorframework.io/project_layout: helm.sdk.operatorframework.io/v1
     repository: https://github.com/yugabyte/yugabyte-platform-operator
     support: YugabyteDB
-  name: yugabyte-platform-operator.vX.Y.Z
+  name: yugabyte-platform-operator.v0.0.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
