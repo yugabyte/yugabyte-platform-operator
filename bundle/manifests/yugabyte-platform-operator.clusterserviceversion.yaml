@@ -173,7 +173,7 @@ metadata:
     support: YugabyteDB
     marketplace.openshift.io/remote-workflow: https://marketplace.redhat.com/en-us/operators/yugabyte-platform-operator-bundle-rhmp/pricing?utm_source=openshift_console
     marketplace.openshift.io/support-workflow: https://marketplace.redhat.com/en-us/operators/yugabyte-platform-operator-bundle-rhmp/support?utm_source=openshift_console
-  name: yugabyte-platform-operator.v2.14.2
+  name: yugabyte-platform-operator.v2.14.2-1
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -408,9 +408,9 @@ spec:
   maturity: alpha
   provider:
     name: Yugabyte Inc
-  version: 2.14.2
+  version: 2.14.2-1
   # Future use
-  # replaces: yugabyte-platform-operator.v0.0.6
+  # replaces: yugabyte-platform-operator.v2.14.2
   # manually added line
   # https://v0-18-z.olm.operatorframework.io/docs/concepts/olm-architecture/operator-catalog/creating-an-update-graph/
   # skips:
