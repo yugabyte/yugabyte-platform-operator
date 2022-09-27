@@ -1,5 +1,5 @@
 # Current Operator version
-VERSION ?= 2.14.1
+VERSION ?= 2.14.2
 # Bundle channels
 CHANNELS ?= stable
 DEFAULT_CHANNEL ?= stable
